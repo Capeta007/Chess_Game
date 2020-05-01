@@ -1,6 +1,6 @@
 package boardgame;
 
-import view.MatchView;
+import boardgame.exceptions.BoardException;
 
 public class Board {
 

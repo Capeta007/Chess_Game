@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import boardgame.Board;
 import boardgame.Piece;
 import boardgame.Position;
+import chess.exceptions.ChessException;
 import chess.pieces.Bishop;
 import chess.pieces.King;
 import chess.pieces.Knight;

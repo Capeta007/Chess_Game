@@ -1,9 +1,7 @@
 package view;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -19,9 +17,9 @@ import javax.swing.border.LineBorder;
 import boardgame.Board;
 import boardgame.Piece;
 import boardgame.Position;
-import chess.ChessException;
 import chess.ChessMatch;
 import chess.ChessPiece;
+import chess.exceptions.ChessException;
 
 public class MatchView extends JFrame {
 
@@ -32,7 +30,6 @@ public class MatchView extends JFrame {
 	private int chessHouseWhidth;
 	private int chessHouseHeight;
 	private boolean clicked;
-	private ChessPiece capturedPiece;
 	private JPanel[][] pnPositions;
 	private JLabel[][] lbPieces;
 	private JLabel lbNumTurn;
