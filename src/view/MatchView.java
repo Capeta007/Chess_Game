@@ -20,9 +20,12 @@ import boardgame.Position;
 import chess.ChessMatch;
 import chess.ChessPiece;
 import chess.exceptions.ChessException;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 public class MatchView extends JFrame {
 
+	
 	private Board board;
 	private ChessMatch match;
 
@@ -30,13 +33,13 @@ public class MatchView extends JFrame {
 	private int chessHouseWhidth;
 	private int chessHouseHeight;
 	private boolean clicked;
-	private JPanel[][] pnPositions;
-	private JLabel[][] lbPieces;
-	private JLabel lbNumTurn;
+	private JPanel[][] pnBoardPositions;
+	private JLabel[][] lbBoardPieces;
+	private JLabel lbNumberTurn;
 	private JLabel lbPlayer;
-	private JLabel lbEvento;
+	private JLabel lbChessGameEvents;
 	private Position source;
-	private JPanel panel_1;
+	private JPanel divLine;
 
 	public MatchView(Board board, ChessMatch match) {
 		// setBoard
@@ -60,8 +63,6 @@ public class MatchView extends JFrame {
 
 		constructionScoreBoard();
 
-		constructionEvents();
-
 	}
 
 	private void constructionScoreBoard() {
@@ -71,10 +72,10 @@ public class MatchView extends JFrame {
 		lblTurn.setBounds(629, 527, 256, 45);
 		contentPane.add(lblTurn);
 
-		lbNumTurn = new JLabel("");
-		lbNumTurn.setFont(new Font("Arial", Font.BOLD, 40));
-		lbNumTurn.setBounds(815, 527, 56, 45);
-		contentPane.add(lbNumTurn);
+		lbNumberTurn = new JLabel("");
+		lbNumberTurn.setFont(new Font("Arial", Font.BOLD, 40));
+		lbNumberTurn.setBounds(815, 527, 56, 45);
+		contentPane.add(lbNumberTurn);
 
 		JLabel lbCurrentPlayer = new JLabel("Current Player:");
 		lbCurrentPlayer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -88,27 +89,28 @@ public class MatchView extends JFrame {
 		lbPlayer.setBounds(629, 83, 270, 64);
 		contentPane.add(lbPlayer);
 		
-		lbEvento = new JLabel();
-		lbEvento.setHorizontalAlignment(SwingConstants.CENTER);
-		lbEvento.setFont(new Font("Arial", Font.BOLD, 40));
-		lbEvento.setBounds(631, 204, 278, 178);
-		contentPane.add(lbEvento);
+		lbChessGameEvents = new JLabel();
+		lbChessGameEvents.setHorizontalAlignment(SwingConstants.CENTER);
+		lbChessGameEvents.setFont(new Font("Arial", Font.BOLD, 40));
+		lbChessGameEvents.setBounds(631, 204, 278, 178);
+		contentPane.add(lbChessGameEvents);
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(Color.LIGHT_GRAY);
 		panel.setBounds(629, 0, 290, 621);
 		contentPane.add(panel);
 		
-		panel_1 = new JPanel();
-		panel_1.setBackground(Color.GRAY);
-		panel_1.setBounds(619, 0, 10, 621);
-		contentPane.add(panel_1);
+		divLine = new JPanel();
+		divLine.setBackground(Color.GRAY);
+		divLine.setBounds(619, 0, 10, 621);
+		contentPane.add(divLine);
+		
 	}
 
 	private void constructionBoard() {
 
-		pnPositions = new JPanel[8][8];
-		lbPieces = new JLabel[8][8];
+		pnBoardPositions = new JPanel[8][8];
+		lbBoardPieces = new JLabel[8][8];
 
 		int y = 25;
 		chessHouseWhidth = 70;
@@ -117,44 +119,45 @@ public class MatchView extends JFrame {
 		
 		String[] values = {"A","B","C","D","E","F","G","H"};
 
-		for (int i = 0; i < pnPositions.length; i++) {
+		for (int i = 0; i < pnBoardPositions.length; i++) {
 			
 			JLabel lbChessPositionX = new JLabel(values[i]);
 			lbChessPositionX.setBounds(((i * 69) + 58 ), 575, 50, 50);
 			lbChessPositionX.setFont(new Font("arial", 1, 25));
 			
-			for (int j = 0; j < pnPositions.length; j++) {
+			for (int j = 0; j < pnBoardPositions.length; j++) {
 				
 				JLabel lbChessPositionY = new JLabel((8-j) + "");
 				lbChessPositionY.setBounds(10, ((j * 70) + 34 ), 50, 50);
 				lbChessPositionY.setFont(new Font("arial", 1, 25));
 
 				// Construindo o tabuleiro
-				pnPositions[i][j] = new JPanel();
-				pnPositions[i][j].setBorder(new LineBorder(new Color(0, 0, 0)));
-				pnPositions[i][j].setBounds(30 + (j * 70), y, chessHouseWhidth, chessHouseHeight);
+				pnBoardPositions[i][j] = new JPanel();
+				pnBoardPositions[i][j].setBorder(new LineBorder(new Color(0, 0, 0)));
+				pnBoardPositions[i][j].setBounds(30 + (j * 70), y, chessHouseWhidth, chessHouseHeight);
+				constructEvent( i, j);
 
 				if (aux % 2 == 0) {
 					if (j % 2 == 0) {
-						pnPositions[i][j].setBackground(Color.white);
+						pnBoardPositions[i][j].setBackground(Color.white);
 					} else {
-						pnPositions[i][j].setBackground(Color.gray);
+						pnBoardPositions[i][j].setBackground(Color.gray);
 					}
 				} else {
 					if (j % 2 == 0) {
-						pnPositions[i][j].setBackground(Color.gray);
+						pnBoardPositions[i][j].setBackground(Color.gray);
 					} else {
-						pnPositions[i][j].setBackground(Color.white);
+						pnBoardPositions[i][j].setBackground(Color.white);
 					}
 				}
 
 				// Construindo as jlabels das peças
-				lbPieces[i][j] = new JLabel("-");
-				lbPieces[i][j].setFont(new Font("arial", 1, 50));
-				lbPieces[i][j].setSize(chessHouseWhidth, chessHouseHeight);
+				lbBoardPieces[i][j] = new JLabel("-");
+				lbBoardPieces[i][j].setFont(new Font("arial", 1, 50));
+				lbBoardPieces[i][j].setSize(chessHouseWhidth, chessHouseHeight);
 
-				pnPositions[i][j].add(lbPieces[i][j]);
-				contentPane.add(pnPositions[i][j]);
+				pnBoardPositions[i][j].add(lbBoardPieces[i][j]);
+				contentPane.add(pnBoardPositions[i][j]);
 				contentPane.add(lbChessPositionY);
 			}
 			aux++;
@@ -164,1485 +167,37 @@ public class MatchView extends JFrame {
 
 	}
 
-	public void constructionEvents() {
-
-		pnPositions[0][0].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(0, 0));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(0, 0));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(0, 0));
-
-			}
-
-		});
-
-		pnPositions[0][1].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(0, 1));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(0, 1));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(0, 1));
-
-			}
-		});
-
-		pnPositions[0][2].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(0, 2));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(0, 2));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(0, 2));
-
-			}
-		});
-
-		pnPositions[0][3].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(0, 3));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(0, 3));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(0, 3));
-
-			}
-		});
-
-		pnPositions[0][4].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(0, 4));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(0, 4));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(0, 4));
-
-			}
-		});
-
-		pnPositions[0][5].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(0, 5));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(0, 5));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(0, 5));
-
-			}
-		});
-
-		pnPositions[0][6].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(0, 6));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(0, 6));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(0, 6));
-
-			}
-		});
-
-		pnPositions[0][7].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(0, 7));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(0, 7));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(0, 7));
-
-			}
-		});
-
-		pnPositions[1][0].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(1, 0));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(1, 0));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(1, 0));
-
-			}
-		});
-
-		pnPositions[1][1].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(1, 1));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(1, 1));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(1, 1));
-
-			}
-		});
-
-		pnPositions[1][2].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(1, 2));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(1, 2));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(1, 2));
-
-			}
-		});
-
-		pnPositions[1][3].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(1, 3));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(1, 3));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(1, 3));
-
-			}
-		});
-
-		pnPositions[1][4].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(1, 4));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(1, 4));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(1, 4));
-
-			}
-		});
-
-		pnPositions[1][5].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(1, 5));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(1, 5));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(1, 5));
-
-			}
-		});
-
-		pnPositions[1][6].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(1, 6));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(1, 6));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(1, 6));
-
-			}
-		});
-
-		pnPositions[1][7].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(1, 7));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(1, 7));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(1, 7));
-
-			}
-		});
-
-		pnPositions[2][0].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(2, 0));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(2, 0));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(2, 0));
-
-			}
-		});
-
-		pnPositions[2][1].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(2, 01));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(2, 01));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(2, 01));
-
-			}
-		});
-
-		pnPositions[2][2].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(2, 02));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(2, 02));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(2, 02));
-
-			}
-		});
-
-		pnPositions[2][3].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(2, 03));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(2, 03));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(2, 03));
-
-			}
-		});
-
-		pnPositions[2][4].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(2, 04));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(2, 04));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(2, 04));
-
-			}
-		});
-
-		pnPositions[2][5].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(2, 05));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(2, 05));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(2, 05));
-
-			}
-		});
-
-		pnPositions[2][6].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(2, 06));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(2, 06));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(2, 06));
-
-			}
-		});
-
-		pnPositions[2][7].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(2, 07));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(2, 07));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(2, 07));
-
-			}
-		});
-
-		pnPositions[3][0].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(3, 0));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(3, 0));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(3, 0));
-
-			}
-		});
-
-		pnPositions[3][1].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(3, 1));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(3, 1));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(3, 1));
-
-			}
-		});
-
-		pnPositions[3][2].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(3, 2));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(3, 2));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(3, 2));
-
-			}
-		});
-
-		pnPositions[3][3].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(3, 3));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(3, 3));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(3, 3));
-
-			}
-		});
-
-		pnPositions[3][4].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(3, 4));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(3, 4));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(3, 4));
-
-			}
-		});
-
-		pnPositions[3][5].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(3, 5));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(3, 5));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(3, 5));
-
-			}
-		});
-
-		pnPositions[3][6].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(3, 6));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(3, 6));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(3, 6));
-
-			}
-		});
-
-		pnPositions[3][7].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(3, 7));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(3, 7));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(3, 7));
-
-			}
-		});
-
-		pnPositions[4][0].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(4, 0));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(4, 0));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(4, 0));
-
-			}
-		});
-
-		pnPositions[4][1].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(4, 1));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(4, 1));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(4, 1));
-
-			}
-		});
-
-		pnPositions[4][2].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(4, 2));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(4, 2));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(4, 2));
-
-			}
-		});
-
-		pnPositions[4][3].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(4, 3));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(4, 3));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(4, 3));
-
-			}
-		});
-
-		pnPositions[4][4].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(4, 4));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(4, 4));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(4, 4));
-
-			}
-		});
-
-		pnPositions[4][5].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(4, 5));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(4, 5));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(4, 5));
-
-			}
-		});
-
-		pnPositions[4][6].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(4, 6));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(4, 6));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(4, 6));
-
-			}
-		});
-
-		pnPositions[4][7].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(4, 7));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(4, 7));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(4, 7));
-
-			}
-		});
-
-		pnPositions[5][0].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(5, 0));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(5, 0));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(5, 0));
-
-			}
-		});
-
-		pnPositions[5][1].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(5, 1));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(5, 1));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(5, 1));
-
-			}
-		});
-
-		pnPositions[5][2].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(5, 2));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(5, 2));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(5, 2));
-
-			}
-		});
-
-		pnPositions[5][3].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(5, 3));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(5, 3));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(5, 3));
-
-			}
-		});
-
-		pnPositions[5][4].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(5, 4));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(5, 4));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(5, 4));
-
-			}
-		});
-
-		pnPositions[5][5].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(5, 5));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(5, 5));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(5, 5));
-
-			}
-		});
-
-		pnPositions[5][6].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(5, 6));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(5, 6));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(5, 6));
-
-			}
-		});
-
-		pnPositions[5][7].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(5, 7));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(5, 7));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(5, 7));
-
-			}
-		});
-
-		pnPositions[6][0].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(6, 0));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(6, 0));
-
-			}
-
+	private void constructEvent(int i, int j) {
+		pnBoardPositions[i][j].addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(6, 0));
-
-			}
-		});
-
-		pnPositions[6][1].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(6, 1));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(6, 1));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(6, 1));
-
-			}
-		});
-
-		pnPositions[6][2].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(6, 2));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(6, 2));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(6, 2));
-
-			}
-		});
-
-		pnPositions[6][3].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(6, 3));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(6, 3));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(6, 3));
-
-			}
-		});
-
-		pnPositions[6][4].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(6, 4));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(6, 4));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(6, 4));
-
-			}
-		});
-
-		pnPositions[6][5].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(6, 5));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(6, 5));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(6, 5));
-
-			}
-		});
-
-		pnPositions[6][6].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(6, 6));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(6, 6));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(6, 6));
-
-			}
-		});
-
-		pnPositions[6][7].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(6, 7));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(6, 7));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(6, 7));
-
-			}
-		});
-
-		pnPositions[7][0].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(7, 0));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(7, 0));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(7, 0));
-
-			}
-		});
-
-		pnPositions[7][1].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(7, 1));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(7, 1));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(7, 1));
-
-			}
-		});
-
-		pnPositions[7][2].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(7, 2));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(7, 2));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(7, 2));
-
-			}
-		});
-
-		pnPositions[7][3].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(7, 3));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(7, 3));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(7, 3));
-
-			}
-		});
-
-		pnPositions[7][4].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(7, 4));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(7, 4));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(7, 4));
-
-			}
-		});
-
-		pnPositions[7][5].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(7, 5));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(7, 5));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(7, 5));
-
-			}
-		});
-
-		pnPositions[7][6].addMouseListener(new MouseAdapter() {
-			@Override
 			public void mouseEntered(MouseEvent arg0) {
 
-				eventMouseEntered(arg0, new Position(7, 6));
+				eventMouseEntered(arg0, new Position(i, j));
 
 			}
 
 			@Override
 			public void mouseExited(MouseEvent arg0) {
 
-				eventMouseExited(arg0, new Position(7, 6));
+				eventMouseExited(arg0, new Position(i, j));
 
 			}
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 
-				eventMouseClicked(arg0, new Position(7, 6));
+				eventMouseClicked(arg0, new Position(i, j));
 
 			}
-		});
 
-		pnPositions[7][7].addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				eventMouseEntered(arg0, new Position(7, 7));
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				eventMouseExited(arg0, new Position(7, 7));
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-
-				eventMouseClicked(arg0, new Position(7, 7));
-
-			}
 		});
 	}
 
+
+
 	private JPanel panelPosition(Position position) {
 
-		return pnPositions[position.getRow()][position.getColumn()];
+		return pnBoardPositions[position.getRow()][position.getColumn()];
 
 	}
 
@@ -1682,7 +237,7 @@ public class MatchView extends JFrame {
 								possibleMoves(position);
 								clicked = true;
 							}else {
-								lbEvento.setText("Any possible moves");
+								lbChessGameEvents.setText("Any possible moves");
 							}
 						}
 						source = position;
@@ -1721,7 +276,7 @@ public class MatchView extends JFrame {
 		for (int i = 0; i < possibles.length; i++) {
 			for (int j = 0; j < possibles.length; j++) {
 				if (possibles[i][j]) {
-					pnPositions[i][j].setBackground(Color.green);
+					pnBoardPositions[i][j].setBackground(Color.green);
 				}
 			}
 		}
@@ -1730,11 +285,11 @@ public class MatchView extends JFrame {
 	public void recorderPiece(Piece piece, int i, int j) {
 
 		if (piece == null) {
-			lbPieces[i][j].setText("-");
-			lbPieces[i][j].setIcon(null);
+			lbBoardPieces[i][j].setText("-");
+			lbBoardPieces[i][j].setIcon(null);
 		} else {
-			lbPieces[i][j].setText("");
-			lbPieces[i][j].setIcon(new ImageIcon(getClass().getResource(piece.toString())));
+			lbBoardPieces[i][j].setText("");
+			lbBoardPieces[i][j].setIcon(new ImageIcon(getClass().getResource(piece.toString())));
 		}
 
 	}
@@ -1745,21 +300,21 @@ public class MatchView extends JFrame {
 
 		int aux = 0;
 
-		for (int i = 0; i < pnPositions.length; i++) {
-			for (int j = 0; j < pnPositions.length; j++) {
+		for (int i = 0; i < pnBoardPositions.length; i++) {
+			for (int j = 0; j < pnBoardPositions.length; j++) {
 
 				// Construindo o tabuleiro
 				if (aux % 2 == 0) {
 					if (j % 2 == 0) {
-						pnPositions[i][j].setBackground(Color.white);
+						pnBoardPositions[i][j].setBackground(Color.white);
 					} else {
-						pnPositions[i][j].setBackground(Color.gray);
+						pnBoardPositions[i][j].setBackground(Color.gray);
 					}
 				} else {
 					if (j % 2 == 0) {
-						pnPositions[i][j].setBackground(Color.gray);
+						pnBoardPositions[i][j].setBackground(Color.gray);
 					} else {
-						pnPositions[i][j].setBackground(Color.white);
+						pnBoardPositions[i][j].setBackground(Color.white);
 					}
 				}
 
@@ -1775,7 +330,7 @@ public class MatchView extends JFrame {
 
 	public void updateScore(int turn, chess.Color color) {
 
-		lbNumTurn.setText("" + turn);
+		lbNumberTurn.setText("" + turn);
 		if (color == chess.Color.WHITE) {
 			lbPlayer.setText(chess.Color.WHITE + "");
 			lbPlayer.setForeground(Color.white);
@@ -1789,9 +344,9 @@ public class MatchView extends JFrame {
 	public void updateCheck(boolean check, String msg) {
 		
 		if(check == true) {
-			lbEvento.setText(msg);
+			lbChessGameEvents.setText(msg);
 		}else {
-			lbEvento.setText(msg);
+			lbChessGameEvents.setText(msg);
 		}
 		
 	}
