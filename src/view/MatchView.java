@@ -28,10 +28,8 @@ public class MatchView extends JFrame {
 	
 	private Board board;
 	private ChessMatch match;
-
+	
 	private JPanel contentPane;
-	private int chessHouseWhidth;
-	private int chessHouseHeight;
 	private boolean clicked;
 	private JPanel[][] pnBoardPositions;
 	private JLabel[][] lbBoardPieces;
@@ -113,8 +111,7 @@ public class MatchView extends JFrame {
 		lbBoardPieces = new JLabel[8][8];
 
 		int y = 25;
-		chessHouseWhidth = 70;
-		chessHouseHeight = 70;
+		int chessHouse = 70;
 		int aux = 0;
 		
 		String[] values = {"A","B","C","D","E","F","G","H"};
@@ -131,30 +128,12 @@ public class MatchView extends JFrame {
 				lbChessPositionY.setBounds(10, ((j * 70) + 34 ), 50, 50);
 				lbChessPositionY.setFont(new Font("arial", 1, 25));
 
-				// Construindo o tabuleiro
-				pnBoardPositions[i][j] = new JPanel();
-				pnBoardPositions[i][j].setBorder(new LineBorder(new Color(0, 0, 0)));
-				pnBoardPositions[i][j].setBounds(30 + (j * 70), y, chessHouseWhidth, chessHouseHeight);
-				constructEvent( i, j);
+				constructionChessHouse( i, j, y, chessHouse);
+				
+				constructEvent(i, j);
 
-				if (aux % 2 == 0) {
-					if (j % 2 == 0) {
-						pnBoardPositions[i][j].setBackground(Color.white);
-					} else {
-						pnBoardPositions[i][j].setBackground(Color.gray);
-					}
-				} else {
-					if (j % 2 == 0) {
-						pnBoardPositions[i][j].setBackground(Color.gray);
-					} else {
-						pnBoardPositions[i][j].setBackground(Color.white);
-					}
-				}
-
-				// Construindo as jlabels das peças
-				lbBoardPieces[i][j] = new JLabel("-");
-				lbBoardPieces[i][j].setFont(new Font("arial", 1, 50));
-				lbBoardPieces[i][j].setSize(chessHouseWhidth, chessHouseHeight);
+				constructionPieces(i,j,chessHouse);
+				
 
 				pnBoardPositions[i][j].add(lbBoardPieces[i][j]);
 				contentPane.add(pnBoardPositions[i][j]);
@@ -164,7 +143,25 @@ public class MatchView extends JFrame {
 			y += 70;
 			contentPane.add(lbChessPositionX);
 		}
+		
+		updateBoard();
 
+	}
+
+	// Construindo as jlabels das peças
+	private void constructionPieces(int i, int j, int chessHouse) {
+		lbBoardPieces[i][j] = new JLabel("-");
+		lbBoardPieces[i][j].setFont(new Font("arial", 1, 50));
+		lbBoardPieces[i][j].setSize(chessHouse, chessHouse);
+		
+	}
+
+	// Construindo o tabuleiro
+	private void constructionChessHouse(int i, int j, int y, int chessHouse) {
+		pnBoardPositions[i][j] = new JPanel();
+		pnBoardPositions[i][j].setBorder(new LineBorder(new Color(0, 0, 0)));
+		pnBoardPositions[i][j].setBounds(30 + (j * 70), y, chessHouse, chessHouse);
+		
 	}
 
 	private void constructEvent(int i, int j) {
